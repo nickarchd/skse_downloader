@@ -60,9 +60,14 @@ class Config(object):
 		self.load(out_cfg)
 	
 	def set(self, group, key, value) -> bool:
-
-		if not self.cfg.set(group, key, value):
-			raise Exception("Config Section: {0} and {1} key not found!".format(group, key))
+		
+		try:
+			self.cfg.set(group, key, value)
+		except:
+			print(f"{group}:{key} not found")
+			return False
+		#if not self.cfg.set(group, key, value):
+		#		raise Exception("Config Section: {0} and {1} key not found!".format(group, key))
 		return True
 	
 	def get(self, group: str, key: str) -> str:

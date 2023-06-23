@@ -1,5 +1,6 @@
 import configparser
 import sys
+import traceback
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -37,14 +38,20 @@ class Config:
             with open(self.config_path, "w") as f:
                 self.config['config'] = self.DEFAULT['config']
                 self.write_conf()
-                self.load()
-        
+            
+
         return self.config.sections().copy()
         
     def set(self, group, key, value) -> bool:
         
-        if not self.config.set(group, key, value):
-            raise Exception("Config Section: {0} and {1} key not found!".format(group,key))
+        try:
+            self.config.set(group, key, value)
+        except Exception as e:
+            print(f"{group}:{key} not found")
+            traceback.print_exc()
+            return False
+        # if not self.cfg.set(group, key, value):
+        #		raise Exception("Config Section: {0} and {1} key not found!".format(group, key))
         return True
     
     def get(self, group: str, key: str) -> str:

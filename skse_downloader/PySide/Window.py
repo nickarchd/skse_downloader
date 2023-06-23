@@ -8,6 +8,7 @@ from PySide6.QtUiTools import QUiLoader
 import skse_downloader.resource
 from skse_downloader.Config2 import  Config
 from skse_downloader.PySide.DownloadTableProxy import DownloadTableProxy
+from skse_downloader.PySide.Progress import Progress
 
 class MainApplication(widgets.QApplication):
 	def __init__(self, **kwargs ):
@@ -25,6 +26,9 @@ class MainApplication(widgets.QApplication):
 	def loader(self):
 		self.uiloader = QUiLoader()
 		self.window = self.uiloader.load(":main.ui")
+		
+		self.progressbar_widget = Progress(self)
+		self.progressbar_widget.showNormal()
 		
 		source = self.cfg.get("config", "url")
 		self.window.cpSource.setPlainText(source)
@@ -66,11 +70,15 @@ class MainApplication(widgets.QApplication):
 		dlg = widgets.QFileDialog.getExistingDirectory(caption="Select Folder")
 		
 		if dlg:
-			self.cfg.set("config", "skyrim_path", dlg)
+			#self.cfg.set("config", "skyrim_path", dlg)
+			path = self.cfg.get("config", "skyrim_path")
+			print(path)
 			
-			#self.cfg.save_all()
+			if not self.cfg.set("config", "skyrim_path", dlg):
+				print("change failed")
 			
-			print("Sucesso!")
+			self.window.cpGamePath.setPlainText(dlg)
+			self.cfg.write_conf()
 			return
 		
 		print("falha")
